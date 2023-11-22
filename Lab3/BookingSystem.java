@@ -12,12 +12,16 @@ public class BookingSystem {
         System.out.println("Total cost for Hotel Booking: " + hotelCost);
 
         hotelBooking.displayTotalCost(3);
+
+        EsportsBooking esportsBooking = new EsportsBooking("ES-789", 50.0, "CS:GO");
+        double esportsCost = esportsBooking.calculateCost(5);
+        System.out.println("Total cost for Esports Booking: " + esportsCost);
     }
 }
 
 abstract class Booking {
-    protected String bookingId;
-    protected double costPerNight;
+    protected final String bookingId;
+    protected final double costPerNight;
 
     public Booking(String bookingId, double costPerNight) {
         this.bookingId = bookingId;
@@ -28,7 +32,7 @@ abstract class Booking {
 }
 
 class FlightBooking extends Booking {
-    private String seatClass;
+    private final String seatClass;
 
     public FlightBooking(String bookingId, double costPerNight, String seatClass) {
         super(bookingId, costPerNight);
@@ -43,7 +47,7 @@ class FlightBooking extends Booking {
 }
 
 final class HotelBooking extends Booking {
-    private int numberOfRooms;
+    private final int numberOfRooms;
 
     public HotelBooking(String bookingId, double costPerNight, int numberOfRooms) {
         super(bookingId, costPerNight);
@@ -58,5 +62,19 @@ final class HotelBooking extends Booking {
     public final void displayTotalCost(int numberOfNights) {
         double totalCost = calculateCost(numberOfNights);
         System.out.println("Total Cost for " + bookingId + ": " + totalCost + "\n");
+    }
+}
+
+class EsportsBooking extends Booking {
+    private final String game;
+
+    public EsportsBooking(String bookingId, double costPerHour, String game) {
+        super(bookingId, costPerHour);
+        this.game = game;
+    }
+
+    @Override
+    public double calculateCost(int numberOfHours) {
+        return costPerNight * numberOfHours;
     }
 }
