@@ -1,4 +1,5 @@
 public class LAb2 {
+    
     String str ;
     String str1 ;
     String str2;
