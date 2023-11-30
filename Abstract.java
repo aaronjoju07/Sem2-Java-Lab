@@ -1,4 +1,3 @@
-package Lab4;
 
 abstract class Computer {
     public abstract void device();
@@ -25,7 +24,7 @@ class Developer {
 
 }
 
-public class Lab4 {
+public class Abstract {
 
     public static void main(String[] args) {
         Developer dev = new Developer();
