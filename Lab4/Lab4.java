@@ -1,16 +1,16 @@
 package Lab4;
 
-abstract class Computer {
+interface Computer {
     public abstract void device();
 }
 
-class Desktop extends Computer {
+class Desktop implements Computer {
     public void device() {
         System.out.println("Desktop");
     }
 }
 
-class Laptop extends Computer {
+class Laptop implements Computer {
     public void device() {
         System.out.println("Laptop");
     }
