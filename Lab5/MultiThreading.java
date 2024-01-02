@@ -7,13 +7,10 @@ class BookingThread extends Thread {
 
     @Override
     public void run() {
-        // Simulating a user making a booking
         makeBooking();
     }
 
     private void makeBooking() {
-        // Assume some booking logic here
-        // For simplicity, we'll just increment a counter
         lock.lock();
         try {
             bookingCount++;
@@ -29,14 +26,12 @@ public class MultiThreading {
     public static void main(String[] args) {
         int numUsers = 5;
 
-        // Create and start multiple threads
         BookingThread[] bookingThreads = new BookingThread[numUsers];
         for (int i = 0; i < numUsers; i++) {
             bookingThreads[i] = new BookingThread();
             bookingThreads[i].start();
         }
 
-        // Wait for all threads to finish
         try {
             for (BookingThread thread : bookingThreads) {
                 thread.join();

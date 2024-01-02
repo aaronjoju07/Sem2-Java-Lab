@@ -1,5 +1,3 @@
-package Lab4;
-
 interface Bookable {
     void book();
 }
@@ -18,8 +16,8 @@ class Bus implements Bookable {
     }
 }
 
-class Traveler {
-    void bookTicket(Bookable bookable) {
+class Traveler<T extends Bookable> {
+    void bookTicket(T bookable) {
         System.out.println("Traveler is booking a ticket on MakeMyTrip");
         bookable.book();
     }
@@ -27,11 +25,13 @@ class Traveler {
 
 public class MakeMyTripApp {
     public static void main(String[] args) {
-        Traveler traveler = new Traveler();
-        Bookable flight = new Flight();
-        Bookable bus = new Bus();
+        Traveler<Flight> flightTraveler = new Traveler<>();
+        Traveler<Bus> busTraveler = new Traveler<>();
 
-        traveler.bookTicket(flight);
-        traveler.bookTicket(bus);
+        Flight flight = new Flight();
+        Bus bus = new Bus();
+
+        flightTraveler.bookTicket(flight);
+        busTraveler.bookTicket(bus);
     }
 }
