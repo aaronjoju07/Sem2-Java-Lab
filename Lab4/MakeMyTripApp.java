@@ -16,8 +16,8 @@ class Bus implements Bookable {
     }
 }
 
-class Traveler<T extends Bookable> {
-    void bookTicket(T bookable) {
+class Traveler {
+    void bookTicket(Bookable bookable) {
         System.out.println("Traveler is booking a ticket on MakeMyTrip");
         bookable.book();
     }
@@ -25,13 +25,11 @@ class Traveler<T extends Bookable> {
 
 public class MakeMyTripApp {
     public static void main(String[] args) {
-        Traveler<Flight> flightTraveler = new Traveler<>();
-        Traveler<Bus> busTraveler = new Traveler<>();
+        Traveler traveler = new Traveler();
+        Bookable flight = new Flight();
+        Bookable bus = new Bus();
 
-        Flight flight = new Flight();
-        Bus bus = new Bus();
-
-        flightTraveler.bookTicket(flight);
-        busTraveler.bookTicket(bus);
+        traveler.bookTicket(flight);
+        traveler.bookTicket(bus);
     }
 }
