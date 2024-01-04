@@ -1,5 +1,12 @@
 interface Bookable {
     void book();
+
+    default void performBooking(BookingAction bookingAction) {
+        bookingAction.book();
+    }
+}
+interface BookingAction {
+    void book();
 }
 
 class Flight implements Bookable {
@@ -15,14 +22,12 @@ class Bus implements Bookable {
         System.out.println("Booked a Bus on MakeMyTrip");
     }
 }
-
 class Traveler<T extends Bookable> {
-    void bookTicket(T bookable) {
+    void bookTicket(T bookable, BookingAction bookingAction) {
         System.out.println("Traveler is booking a ticket on MakeMyTrip");
-        bookable.book();
+        bookable.performBooking(bookingAction);
     }
 }
-
 public class MakeMyTripApp {
     public static void main(String[] args) {
         Traveler<Flight> flightTraveler = new Traveler<>();
@@ -31,7 +36,8 @@ public class MakeMyTripApp {
         Flight flight = new Flight();
         Bus bus = new Bus();
 
-        flightTraveler.bookTicket(flight);
-        busTraveler.bookTicket(bus);
+        // Using lambda expressions for booking actions
+        flightTraveler.bookTicket(flight, () -> System.out.println("Booking action for Flight"));
+        busTraveler.bookTicket(bus, () -> System.out.println("Booking action for Bus"));
     }
 }
