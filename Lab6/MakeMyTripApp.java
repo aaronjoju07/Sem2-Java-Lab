@@ -1,7 +1,7 @@
 interface Bookable {
     void book();
 }
-@@ -18,20 +16,22 @@ public void book() {
+public void book() {
     }
 }
 
