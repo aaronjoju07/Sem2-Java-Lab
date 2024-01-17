@@ -5,10 +5,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MakeMyTripJDBC {
-    static final String JDBC_URL = "jdbc:postgresql://your-database-host:5432/your-database-name";
-    static final String JDBC_USER = "your-username";
-    static final String JDBC_PASSWORD = "your-password";
+public class Main {
+    static final String JDBC_URL = "jdbc:postgresql://localhost:5432/IVM";
+    static final String JDBC_USER = "postgres";
+    static final String JDBC_PASSWORD = "0000";
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -17,7 +17,7 @@ public class MakeMyTripJDBC {
             frame.setSize(600, 400);
 
             JPanel panel = new JPanel();
-            panel.setLayout(new GridLayout(5, 2));
+            panel.setLayout(new GridLayout(8, 2));
 
             JLabel sourceLabel = new JLabel("Source:");
             JTextField sourceField = new JTextField();
@@ -41,23 +41,61 @@ public class MakeMyTripJDBC {
                 }
             });
 
+            JButton insertButton = new JButton("Insert Flight");
+
+
+            JLabel idLabel = new JLabel("FlightID:");
+            JTextField idField = new JTextField();
+            insertButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Call the insert flight method
+                    insertFlight(idField.getText(),sourceField.getText(), destinationField.getText(), dateField.getText());
+                }
+            });
+
+            JButton deleteButton = new JButton("Delete Flight");
+            deleteButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Call the delete flight method
+                    deleteFlight(sourceField.getText(), destinationField.getText(), dateField.getText());
+                }
+            });
+
+            JButton displayAllButton = new JButton("Display All Flights");
+            displayAllButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Display all flights
+                    displayAllFlights();
+                }
+            });
+            panel.add(idLabel);
+            panel.add(idField);
             panel.add(sourceLabel);
             panel.add(sourceField);
             panel.add(destinationLabel);
             panel.add(destinationField);
             panel.add(dateLabel);
             panel.add(dateField);
-            panel.add(new JLabel()); // Empty space
+            panel.add(new JLabel());
             panel.add(searchButton);
-
+            panel.add(new JLabel());
+            panel.add(insertButton);
+            panel.add(new JLabel());
+            panel.add(deleteButton);
+            panel.add(new JLabel());
+            panel.add(displayAllButton);
             frame.add(panel);
+            frame.pack();
             frame.setVisible(true);
         });
     }
 
     private static void displayAvailableFlights(String source, String destination, String date) {
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
-            String sql = "SELECT * FROM flights WHERE source = ? AND destination = ? AND date = ?";
+            String sql = "SELECT * FROM flights WHERE source = ? AND destination = ? AND date = CAST(? AS DATE)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, source);
                 preparedStatement.setString(2, destination);
@@ -75,7 +113,6 @@ public class MakeMyTripJDBC {
 
     private static void displayFlightsDialog(ResultSet resultSet, String source, String destination, String date) {
         try {
-            // Create a dialog to display available flights
             JDialog dialog = new JDialog();
             dialog.setTitle("Available Flights");
             dialog.setSize(400, 300);
@@ -89,15 +126,14 @@ public class MakeMyTripJDBC {
                         resultSet.getString("destination") + " on " +
                         resultSet.getString("date");
 
+                String flightNumber = resultSet.getString("flight_number"); // Store the flight number
+
                 JButton bookButton = new JButton("Book");
                 bookButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // Mark the flight as booked in the database
-                        bookFlight(resultSet.getString("flight_number"));
-                        // Display a popup message
+                        bookFlight(flightNumber); // Use the stored flight number
                         JOptionPane.showMessageDialog(dialog, "Flight booked!\n" + flightInfo);
-                        // Close the dialog
                         dialog.dispose();
                     }
                 });
@@ -120,6 +156,65 @@ public class MakeMyTripJDBC {
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, flightNumber);
                 preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void insertFlight(String id,String source, String destination, String date) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+            // Parse the date string into java.sql.Date
+            java.sql.Date sqlDate = java.sql.Date.valueOf(date);
+
+            // Exclude "flight_number" from the INSERT statement
+            String sql = "INSERT INTO flights (flight_number,source, destination, date, booked) VALUES (?,?, ?, ?, false)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                preparedStatement.setString(1, id);
+                preparedStatement.setString(2, source);
+                preparedStatement.setString(3, destination);
+                preparedStatement.setDate(4, sqlDate);
+                preparedStatement.executeUpdate();
+
+                // Retrieve the generated flight_number
+                try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int generatedFlightNumber = generatedKeys.getInt(1);
+                        System.out.println("Generated Flight Number: " + generatedFlightNumber);
+                    } else {
+                        throw new SQLException("Failed to retrieve generated flight_number.");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+    private static void deleteFlight(String source, String destination, String date) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+            String sql = "DELETE FROM flights WHERE source = ? AND destination = ? AND date = CAST(? AS DATE)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, source);
+                preparedStatement.setString(2, destination);
+                preparedStatement.setString(3, date);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void displayAllFlights() {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+            String sql = "SELECT * FROM flights";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    displayFlightsDialog(resultSet, "All Flights", "All Destinations", "All Dates");
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
