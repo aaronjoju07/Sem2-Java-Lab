@@ -3,6 +3,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+class Main {
+    public static void main(String[] args) {
+        MakeMyTripCollection makeMyTripCollection = new MakeMyTripCollection();
+
+        // Adding sample flights
+        makeMyTripCollection.addFlight(new Flight("AI101", "DEL", "BOM", 500.0));
+        makeMyTripCollection.addFlight(new Flight("UA202", "NYC", "LAX", 700.0));
+        makeMyTripCollection.addFlight(new Flight("EK303", "DXB", "JFK", 1000.0));
+
+        // Retrieving flights from a specific source
+        List<Flight> delhiFlights = makeMyTripCollection.getFlightsBySource("DEL");
+        System.out.println("Flights from DEL: " + delhiFlights);
+
+        // Retrieving flights to a specific destination
+        List<Flight> jfkFlights = makeMyTripCollection.getFlightsByDestination("JFK");
+        System.out.println("Flights to JFK: " + jfkFlights);
+    }
+}
 // Entity classes
 class Flight {
     private String flightNumber;
@@ -65,21 +83,4 @@ class MakeMyTripCollection {
     }
 }
 
-class Main {
-    public static void main(String[] args) {
-        MakeMyTripCollection makeMyTripCollection = new MakeMyTripCollection();
 
-        // Adding sample flights
-        makeMyTripCollection.addFlight(new Flight("AI101", "DEL", "BOM", 500.0));
-        makeMyTripCollection.addFlight(new Flight("UA202", "NYC", "LAX", 700.0));
-        makeMyTripCollection.addFlight(new Flight("EK303", "DXB", "JFK", 1000.0));
-
-        // Retrieving flights from a specific source
-        List<Flight> delhiFlights = makeMyTripCollection.getFlightsBySource("DEL");
-        System.out.println("Flights from DEL: " + delhiFlights);
-
-        // Retrieving flights to a specific destination
-        List<Flight> jfkFlights = makeMyTripCollection.getFlightsByDestination("JFK");
-        System.out.println("Flights to JFK: " + jfkFlights);
-    }
-}

@@ -1,3 +1,15 @@
+public class MakeMyTripApp {
+    public static void main(String[] args) {
+        Traveler<Flight> flightTraveler = new Traveler<>();
+        Traveler<Bus> busTraveler = new Traveler<>();
+
+        Flight flight = new Flight();
+        Bus bus = new Bus();
+
+        flightTraveler.bookTicket(flight, () -> System.out.println("Booking action for Flight"));
+        busTraveler.bookTicket(bus, () -> System.out.println("Booking action for Bus"));
+    }
+}
 interface Bookable {
     void book();
 
@@ -28,16 +40,4 @@ class Traveler<T extends Bookable> {
         bookable.performBooking(bookingAction);
     }
 }
-public class MakeMyTripApp {
-    public static void main(String[] args) {
-        Traveler<Flight> flightTraveler = new Traveler<>();
-        Traveler<Bus> busTraveler = new Traveler<>();
 
-        Flight flight = new Flight();
-        Bus bus = new Bus();
-
-        // Using lambda expressions for booking actions
-        flightTraveler.bookTicket(flight, () -> System.out.println("Booking action for Flight"));
-        busTraveler.bookTicket(bus, () -> System.out.println("Booking action for Bus"));
-    }
-}
