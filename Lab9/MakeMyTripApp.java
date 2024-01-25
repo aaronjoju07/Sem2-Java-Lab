@@ -9,7 +9,7 @@ public class MakeMyTripApp {
     private static List<Flight> flightList;
 
     public static void main(String[] args) {
-        // Initialize sample flight list
+
         initializeSampleFlights();
 
         SwingUtilities.invokeLater(() -> {
@@ -81,7 +81,7 @@ public class MakeMyTripApp {
     private static Flight searchFlight(String source, String destination, String date) {
         for (Flight flight : flightList) {
             if (flight.getSource().equalsIgnoreCase(source) &&
-                    flight.getDestination().equalsIgnoreCase(destination) &&
+                    flight.getDestination().equalsIgnoreCase(destination) ||
                     flight.getDate().equals(date)) {
                 return flight;
             }

@@ -164,10 +164,7 @@ public class Main {
 
     private static void insertFlight(String id,String source, String destination, String date) {
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
-            // Parse the date string into java.sql.Date
             java.sql.Date sqlDate = java.sql.Date.valueOf(date);
-
-            // Exclude "flight_number" from the INSERT statement
             String sql = "INSERT INTO flights (flight_number,source, destination, date, booked) VALUES (?,?, ?, ?, false)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, id);
@@ -176,7 +173,6 @@ public class Main {
                 preparedStatement.setDate(4, sqlDate);
                 preparedStatement.executeUpdate();
 
-                // Retrieve the generated flight_number
                 try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         int generatedFlightNumber = generatedKeys.getInt(1);
